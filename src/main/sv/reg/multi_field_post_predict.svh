@@ -50,8 +50,8 @@ virtual class multi_field_post_predict;
    */
   function uvm_reg_data_t get_prev_reg_value();
     uvm_reg_data_t result;
-    foreach (capture_cbs[i])
-      result |= capture_cbs[i].prev_value << capture_cbs[i].lsb_pos;
+    foreach (capture_cbs[field])
+      result |= capture_cbs[field].prev_value << field.get_lsb_pos();
     return result;
   endfunction
 
@@ -61,8 +61,8 @@ virtual class multi_field_post_predict;
    */
   function uvm_reg_data_t get_reg_value();
     uvm_reg_data_t result;
-    foreach (capture_cbs[i])
-      result |= capture_cbs[i].value << capture_cbs[i].lsb_pos;
+    foreach (capture_cbs[field])
+      result |= capture_cbs[field].value << field.get_lsb_pos();
     return result;
   endfunction
 
@@ -101,7 +101,7 @@ virtual class multi_field_post_predict;
     uvm_reg_data_t prev_value;
     uvm_reg_data_t value;
     uvm_predict_e kind;
-    int unsigned lsb_pos;
+
     local const multi_field_post_predict parent;
 
     function new(multi_field_post_predict parent);
@@ -118,7 +118,6 @@ virtual class multi_field_post_predict;
       this.prev_value = previous;
       this.value = value;
       this.kind = kind;
-      this.lsb_pos = fld.get_lsb_pos();
     endfunction
 
     `m_uvm_get_type_name_func(capture_prev_value_cb)
