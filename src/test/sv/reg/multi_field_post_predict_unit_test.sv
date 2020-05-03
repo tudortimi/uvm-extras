@@ -169,6 +169,14 @@ module multi_field_post_predict_unit_test;
 
 
   class dummy_reg_block extends uvm_reg_block;
+
+    local static int unsigned idx;
+
+    function new();
+      super.new($sformatf("%s_reg_block_%0d", name, idx));
+      idx++;
+    endfunction
+
   endclass
 
 
