@@ -111,6 +111,19 @@ module multi_field_post_predict_unit_test;
       `FAIL_UNLESS(cb.prev_reg_value_at_post_predict_call == 'h1234_5678)
     `SVTEST_END
 
+
+    `SVTEST(get_prev_reg_val__reg_with_two_fields__returns_val_for_predict)
+      reg_with_two_fields rg = get_new_reg_with_two_fields();
+      multi_field_post_predict_dummy_impl cb = new();
+      multi_field_post_predict::add(cb, rg);
+
+      void'(rg.predict('h0000_0000));
+
+      void'(rg.predict('h1234_5678, .kind(UVM_PREDICT_WRITE)));
+
+      `FAIL_UNLESS(cb.get_reg_value() == 'h1234_5678)
+    `SVTEST_END
+
   `SVUNIT_TESTS_END
 
 
