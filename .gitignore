@@ -5,7 +5,12 @@
 
 # Xcelium
 xcelium.d
-xrun.history
+*.history
 *.shm
 *.key
 .simvision
+
+# SVUnit
+.__testsuite.sv
+.testrunner.sv
+.svunit.f
