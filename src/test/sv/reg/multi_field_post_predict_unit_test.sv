@@ -140,6 +140,19 @@ module multi_field_post_predict_unit_test;
       `FAIL_UNLESS(cb.get_field_value(rg.FIELD1) == 'h1234)
     `SVTEST_END
 
+
+    `SVTEST(get_kind__reg__returns_kind_for_predict)
+      uvm_reg rg = reg_builder #(reg_with_one_field)::create();
+      multi_field_post_predict_dummy_impl cb = new();
+      multi_field_post_predict::add(cb, rg);
+
+      void'(rg.predict('h0, .kind(UVM_PREDICT_WRITE)));
+      `FAIL_UNLESS(cb.get_kind() == UVM_PREDICT_WRITE)
+
+      void'(rg.predict('h0, .kind(UVM_PREDICT_READ)));
+      `FAIL_UNLESS(cb.get_kind() == UVM_PREDICT_READ)
+    `SVTEST_END
+
   `SVUNIT_TESTS_END
 
 

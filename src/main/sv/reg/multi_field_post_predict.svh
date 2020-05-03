@@ -83,6 +83,16 @@ virtual class multi_field_post_predict;
   endfunction
 
 
+  /**
+   * Returns the kind of the predict call.
+   */
+  function uvm_predict_e get_kind();
+    uvm_reg_field field;
+    void'(capture_cbs.first(field));
+    return capture_cbs[field].kind;
+  endfunction
+
+
   pure virtual function void post_predict();
 
 
@@ -90,6 +100,7 @@ virtual class multi_field_post_predict;
 
     uvm_reg_data_t prev_value;
     uvm_reg_data_t value;
+    uvm_predict_e kind;
     int unsigned lsb_pos;
     local const multi_field_post_predict parent;
 
@@ -106,6 +117,7 @@ virtual class multi_field_post_predict;
         input uvm_reg_map map);
       this.prev_value = previous;
       this.value = value;
+      this.kind = kind;
       this.lsb_pos = fld.get_lsb_pos();
     endfunction
 
