@@ -39,7 +39,7 @@ virtual class multi_field_post_predict;
    * Returns the value of the register before the predict call.
    */
   function uvm_reg_data_t get_prev_reg_value();
-    return capture_cb.prev_value;
+    return capture_cb.prev_value << capture_cb.lsb_pos;
   endfunction
 
 
@@ -49,6 +49,7 @@ virtual class multi_field_post_predict;
   class capture_prev_value_cb extends uvm_reg_cbs;
 
     uvm_reg_data_t prev_value;
+    int unsigned lsb_pos;
 
     virtual function void post_predict(
         input uvm_reg_field fld,
@@ -58,6 +59,7 @@ virtual class multi_field_post_predict;
         input uvm_path_e path,
         input uvm_reg_map map);
       this.prev_value = previous;
+      this.lsb_pos = fld.get_lsb_pos();
     endfunction
 
   endclass
