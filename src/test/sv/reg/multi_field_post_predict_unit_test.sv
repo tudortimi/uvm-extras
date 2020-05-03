@@ -51,11 +51,9 @@ module multi_field_post_predict_unit_test;
   `SVUNIT_TESTS_BEGIN
 
     `SVTEST(get_prev_reg_val__reg_with_single_field__returns_val_before_predict)
-      reg_with_one_field rg = reg_builder #(reg_with_one_field)::create();
+      reg_with_one_field rg = reg_builder #(reg_with_one_field)::create('h1234_5678);
       multi_field_post_predict_dummy_impl cb = new();
       multi_field_post_predict::add(cb, rg);
-
-      void'(rg.predict('h1234_5678));
 
       void'(rg.predict('h0000_0000, .kind(UVM_PREDICT_WRITE)));
 
@@ -64,11 +62,10 @@ module multi_field_post_predict_unit_test;
 
 
     `SVTEST(get_prev_reg_val__reg_with_single_field_and_lsb_gap__returns_val_before_predict)
-      reg_with_one_field_and_lsb_gap rg = reg_builder #(reg_with_one_field_and_lsb_gap)::create();
+      reg_with_one_field_and_lsb_gap rg = reg_builder #(reg_with_one_field_and_lsb_gap)::create(
+          'h1234_0000);
       multi_field_post_predict_dummy_impl cb = new();
       multi_field_post_predict::add(cb, rg);
-
-      void'(rg.predict('h1234_0000));
 
       void'(rg.predict('h0000_0000, .kind(UVM_PREDICT_WRITE)));
 
@@ -77,11 +74,9 @@ module multi_field_post_predict_unit_test;
 
 
     `SVTEST(get_prev_reg_val__reg_with_two_fields__returns_val_before_predict)
-      reg_with_two_fields rg = reg_builder #(reg_with_two_fields)::create();
+      reg_with_two_fields rg = reg_builder #(reg_with_two_fields)::create('h1234_5678);
       multi_field_post_predict_dummy_impl cb = new();
       multi_field_post_predict::add(cb, rg);
-
-      void'(rg.predict('h1234_5678));
 
       void'(rg.predict('h0000_0000, .kind(UVM_PREDICT_WRITE)));
 
@@ -101,11 +96,9 @@ module multi_field_post_predict_unit_test;
 
 
     `SVTEST(post_predict__reg_with_two_fields__prev_value_updates)
-      reg_with_two_fields rg = reg_builder #(reg_with_two_fields)::create();
+      reg_with_two_fields rg = reg_builder #(reg_with_two_fields)::create('h1234_5678);
       multi_field_post_predict_dummy_impl cb = new();
       multi_field_post_predict::add(cb, rg);
-
-      void'(rg.predict('h1234_5678));
 
       void'(rg.predict('h0000_0000, .kind(UVM_PREDICT_WRITE)));
 
@@ -114,11 +107,9 @@ module multi_field_post_predict_unit_test;
 
 
     `SVTEST(get_prev_reg_val__reg_with_two_fields__returns_val_for_predict)
-      reg_with_two_fields rg = reg_builder #(reg_with_two_fields)::create();
+      reg_with_two_fields rg = reg_builder #(reg_with_two_fields)::create('h0000_0000);
       multi_field_post_predict_dummy_impl cb = new();
       multi_field_post_predict::add(cb, rg);
-
-      void'(rg.predict('h0000_0000));
 
       void'(rg.predict('h1234_5678, .kind(UVM_PREDICT_WRITE)));
 
@@ -127,11 +118,9 @@ module multi_field_post_predict_unit_test;
 
 
     `SVTEST(get_prev_field_val__reg_with_two_fields__returns_vals_before_predict)
-      reg_with_two_fields rg = reg_builder #(reg_with_two_fields)::create();
+      reg_with_two_fields rg = reg_builder #(reg_with_two_fields)::create('h1234_5678);
       multi_field_post_predict_dummy_impl cb = new();
       multi_field_post_predict::add(cb, rg);
-
-      void'(rg.predict('h1234_5678));
 
       void'(rg.predict('h0000_0000, .kind(UVM_PREDICT_WRITE)));
 
@@ -141,11 +130,9 @@ module multi_field_post_predict_unit_test;
 
 
     `SVTEST(get_field_val__reg_with_two_fields__returns_vals_for_predict)
-      reg_with_two_fields rg = reg_builder #(reg_with_two_fields)::create();
+      reg_with_two_fields rg = reg_builder #(reg_with_two_fields)::create('h0000_0000);
       multi_field_post_predict_dummy_impl cb = new();
       multi_field_post_predict::add(cb, rg);
-
-      void'(rg.predict('h0000_0000));
 
       void'(rg.predict('h1234_5678, .kind(UVM_PREDICT_WRITE)));
 
@@ -171,13 +158,14 @@ module multi_field_post_predict_unit_test;
 
   class reg_builder #(type T = uvm_reg);
 
-    static function T create();
+    static function T create(uvm_reg_data_t value = '0);
       dummy_reg_block reg_block = new();
       T rg = new();
       rg.configure(reg_block);
       reg_block.default_map = reg_block.create_map("default_map", 'h0, 4, UVM_LITTLE_ENDIAN);
       reg_block.default_map.add_reg(rg, 'h0);
       reg_block.lock_model();
+      void'(rg.predict(value));
       return rg;
     endfunction
 
