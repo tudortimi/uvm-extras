@@ -19,7 +19,7 @@ virtual class multi_field_post_predict;
   typedef class call_post_predict_cb;
 
 
-  local capture_prev_value_cb capture_cbs[$];
+  local capture_prev_value_cb capture_cbs[uvm_reg_field];
 
 
   static function void add(multi_field_post_predict inst, uvm_reg rg);
@@ -30,7 +30,7 @@ virtual class multi_field_post_predict;
     foreach (fields[i]) begin
       capture_prev_value_cb capture_cb = new();
       uvm_reg_field_cb::add(fields[i], capture_cb);
-      inst.capture_cbs.push_back(capture_cb);
+      inst.capture_cbs[fields[i]] = capture_cb;
     end
 
     // We rely on the fact that 'predict(...)' gets called on the last field after all other fields
@@ -59,6 +59,22 @@ virtual class multi_field_post_predict;
     foreach (capture_cbs[i])
       result |= capture_cbs[i].value << capture_cbs[i].lsb_pos;
     return result;
+  endfunction
+
+
+  /**
+   * Returns the value of the field before the predict call.
+   */
+  function uvm_reg_data_t get_prev_field_value(uvm_reg_field field);
+    return capture_cbs[field].prev_value;
+  endfunction
+
+
+  /**
+   * Returns the value to be set in the field by the predict call.
+   */
+  function uvm_reg_data_t get_field_value(uvm_reg_field field);
+    return capture_cbs[field].value;
   endfunction
 
 

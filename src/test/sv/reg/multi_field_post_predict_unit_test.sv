@@ -124,6 +124,34 @@ module multi_field_post_predict_unit_test;
       `FAIL_UNLESS(cb.get_reg_value() == 'h1234_5678)
     `SVTEST_END
 
+
+    `SVTEST(get_prev_field_val__reg_with_two_fields__returns_vals_before_predict)
+      reg_with_two_fields rg = get_new_reg_with_two_fields();
+      multi_field_post_predict_dummy_impl cb = new();
+      multi_field_post_predict::add(cb, rg);
+
+      void'(rg.predict('h1234_5678));
+
+      void'(rg.predict('h0000_0000, .kind(UVM_PREDICT_WRITE)));
+
+      `FAIL_UNLESS(cb.get_prev_field_value(rg.FIELD0) == 'h5678)
+      `FAIL_UNLESS(cb.get_prev_field_value(rg.FIELD1) == 'h1234)
+    `SVTEST_END
+
+
+    `SVTEST(get_field_val__reg_with_two_fields__returns_vals_for_predict)
+      reg_with_two_fields rg = get_new_reg_with_two_fields();
+      multi_field_post_predict_dummy_impl cb = new();
+      multi_field_post_predict::add(cb, rg);
+
+      void'(rg.predict('h0000_0000));
+
+      void'(rg.predict('h1234_5678, .kind(UVM_PREDICT_WRITE)));
+
+      `FAIL_UNLESS(cb.get_field_value(rg.FIELD0) == 'h5678)
+      `FAIL_UNLESS(cb.get_field_value(rg.FIELD1) == 'h1234)
+    `SVTEST_END
+
   `SVUNIT_TESTS_END
 
 
