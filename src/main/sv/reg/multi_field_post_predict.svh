@@ -15,6 +15,51 @@
 
 virtual class multi_field_post_predict;
 
+  typedef class capture_prev_value_cb;
+
+
+  local capture_prev_value_cb capture_cb;
+
+
+  static function void add(multi_field_post_predict inst, uvm_reg rg);
+    capture_prev_value_cb capture_cb = new();
+    uvm_reg_field fields[$];
+    rg.get_fields(fields);
+    uvm_reg_field_cb::add(fields[0], capture_cb);
+    inst.set_capture_cb(capture_cb);
+  endfunction
+
+
+  local function void set_capture_cb(capture_prev_value_cb cb);
+    capture_cb = cb;
+  endfunction
+
+
+  /**
+   * Returns the value of the register before the predict call.
+   */
+  function uvm_reg_data_t get_prev_reg_value();
+    return capture_cb.prev_value;
+  endfunction
+
+
   pure virtual function void post_predict();
+
+
+  class capture_prev_value_cb extends uvm_reg_cbs;
+
+    uvm_reg_data_t prev_value;
+
+    virtual function void post_predict(
+        input uvm_reg_field fld,
+        input uvm_reg_data_t previous,
+        inout uvm_reg_data_t value,
+        input uvm_predict_e kind,
+        input uvm_path_e path,
+        input uvm_reg_map map);
+      this.prev_value = previous;
+    endfunction
+
+  endclass
 
 endclass
