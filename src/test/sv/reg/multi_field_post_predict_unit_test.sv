@@ -13,11 +13,36 @@
 // limitations under the License.
 
 
-package uvm_extras;
+module multi_field_post_predict_unit_test;
 
-  import uvm_pkg::*;
-  `include "uvm_macros.svh"
+  import svunit_pkg::*;
+  `include "svunit_defines.svh"
 
-  `include "reg/multi_field_post_predict.svh"
+  string name = "multi_field_post_predict_ut";
+  svunit_testcase svunit_ut;
 
-endpackage
+
+  function void build();
+    svunit_ut = new(name);
+  endfunction
+
+
+  task setup();
+    svunit_ut.setup();
+  endtask
+
+
+  task teardown();
+    svunit_ut.teardown();
+  endtask
+
+
+  `SVUNIT_TESTS_BEGIN
+
+    `SVTEST(dummy)
+      `FAIL_IF(0);
+    `SVTEST_END
+
+  `SVUNIT_TESTS_END
+
+endmodule

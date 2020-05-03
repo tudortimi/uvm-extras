@@ -13,11 +13,8 @@
 // limitations under the License.
 
 
-package uvm_extras;
+virtual class multi_field_post_predict;
 
-  import uvm_pkg::*;
-  `include "uvm_macros.svh"
+  pure virtual function void post_predict();
 
-  `include "reg/multi_field_post_predict.svh"
-
-endpackage
+endclass
