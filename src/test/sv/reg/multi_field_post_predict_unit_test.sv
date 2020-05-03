@@ -73,12 +73,26 @@ module multi_field_post_predict_unit_test;
       `FAIL_UNLESS(cb.get_prev_reg_value() == 'h1234_0000)
     `SVTEST_END
 
+
+    `SVTEST(post_predict__reg_with_single_field__called_once)
+      reg_with_one_field rg = get_new_reg_with_one_field();
+      multi_field_post_predict_dummy_impl cb = new();
+      multi_field_post_predict::add(cb, rg);
+
+      void'(rg.predict('h0000_0000, .kind(UVM_PREDICT_WRITE)));
+
+      `FAIL_UNLESS(cb.num_post_predict_calls == 1)
+    `SVTEST_END
+
   `SVUNIT_TESTS_END
 
 
   class multi_field_post_predict_dummy_impl extends multi_field_post_predict;
 
+    int unsigned num_post_predict_calls;
+
     virtual function void post_predict();
+      num_post_predict_calls++;
     endfunction
 
   endclass

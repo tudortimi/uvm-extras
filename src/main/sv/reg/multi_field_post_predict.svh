@@ -16,6 +16,7 @@
 virtual class multi_field_post_predict;
 
   typedef class capture_prev_value_cb;
+  typedef class call_post_predict_cb;
 
 
   local capture_prev_value_cb capture_cb;
@@ -23,10 +24,15 @@ virtual class multi_field_post_predict;
 
   static function void add(multi_field_post_predict inst, uvm_reg rg);
     capture_prev_value_cb capture_cb = new();
+    call_post_predict_cb call_cb = new();
     uvm_reg_field fields[$];
     rg.get_fields(fields);
+
     uvm_reg_field_cb::add(fields[0], capture_cb);
     inst.set_capture_cb(capture_cb);
+
+    call_cb.parent = inst;
+    uvm_reg_field_cb::add(fields[0], call_cb);
   endfunction
 
 
@@ -60,6 +66,23 @@ virtual class multi_field_post_predict;
         input uvm_reg_map map);
       this.prev_value = previous;
       this.lsb_pos = fld.get_lsb_pos();
+    endfunction
+
+  endclass
+
+
+  class call_post_predict_cb extends uvm_reg_cbs;
+
+    multi_field_post_predict parent;
+
+    virtual function void post_predict(
+        input uvm_reg_field fld,
+        input uvm_reg_data_t previous,
+        inout uvm_reg_data_t value,
+        input uvm_predict_e kind,
+        input uvm_path_e path,
+        input uvm_reg_map map);
+      parent.post_predict();
     endfunction
 
   endclass
