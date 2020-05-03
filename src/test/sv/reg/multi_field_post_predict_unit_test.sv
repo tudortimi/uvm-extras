@@ -29,6 +29,7 @@ module multi_field_post_predict_unit_test;
   typedef class dummy_reg_block;
   typedef class reg_with_one_field;
   typedef class reg_with_one_field_and_lsb_gap;
+  typedef class reg_with_two_fields;
 
 
   function void build();
@@ -71,6 +72,19 @@ module multi_field_post_predict_unit_test;
       void'(rg.predict('h0000_0000, .kind(UVM_PREDICT_WRITE)));
 
       `FAIL_UNLESS(cb.get_prev_reg_value() == 'h1234_0000)
+    `SVTEST_END
+
+
+    `SVTEST(get_prev_reg_val__reg_with_two_fields__returns_val_before_predict)
+      reg_with_two_fields rg = get_new_reg_with_two_fields();
+      multi_field_post_predict_dummy_impl cb = new();
+      multi_field_post_predict::add(cb, rg);
+
+      void'(rg.predict('h1234_5678));
+
+      void'(rg.predict('h0000_0000, .kind(UVM_PREDICT_WRITE)));
+
+      `FAIL_UNLESS(cb.get_prev_reg_value() == 'h1234_5678)
     `SVTEST_END
 
 
@@ -145,6 +159,33 @@ module multi_field_post_predict_unit_test;
       super.new(name, 32, 0);
       FIELD0 = uvm_reg_field::type_id::create("FIELD0");
       FIELD0.configure(this, 16, 16, "RW", 0, 0, 1, 1, 0);
+    endfunction
+
+  endclass
+
+
+  function automatic reg_with_two_fields get_new_reg_with_two_fields();
+    dummy_reg_block reg_block = new();
+    reg_with_two_fields rg = new();
+    rg.configure(reg_block);
+    reg_block.default_map = reg_block.create_map("default_map", 'h0, 4, UVM_LITTLE_ENDIAN);
+    reg_block.default_map.add_reg(rg, 'h0);
+    reg_block.lock_model();
+    return rg;
+  endfunction
+
+
+  class reg_with_two_fields extends uvm_reg;
+
+    uvm_reg_field FIELD0;
+    uvm_reg_field FIELD1;
+
+    function new(string name = get_type_name());
+      super.new(name, 32, 0);
+      FIELD0 = uvm_reg_field::type_id::create("FIELD0");
+      FIELD0.configure(this, 16, 0, "RW", 0, 0, 1, 1, 0);
+      FIELD1 = uvm_reg_field::type_id::create("FIELD1");
+      FIELD1.configure(this, 16, 16, "RW", 0, 0, 1, 1, 0);
     endfunction
 
   endclass
