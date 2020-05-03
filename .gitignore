@@ -11,6 +11,6 @@ xcelium.d
 .simvision
 
 # SVUnit
-.__testsuite.sv
+.__*testsuite.sv
 .testrunner.sv
 .svunit.f
