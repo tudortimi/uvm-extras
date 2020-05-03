@@ -52,105 +52,105 @@ module multi_field_post_predict_unit_test;
 
     `SVTEST(get_prev_reg_val__reg_with_single_field__returns_val_before_predict)
       reg_with_one_field rg = reg_builder #(reg_with_one_field)::create('h1234_5678);
-      multi_field_post_predict_dummy_impl cb = new();
-      multi_field_post_predict::add(cb, rg);
+      multi_field_post_predict_dummy_impl post_predict = new();
+      multi_field_post_predict::add(post_predict, rg);
 
       void'(rg.predict('h0000_0000, .kind(UVM_PREDICT_WRITE)));
 
-      `FAIL_UNLESS(cb.get_prev_reg_value() == 'h1234_5678)
+      `FAIL_UNLESS(post_predict.get_prev_reg_value() == 'h1234_5678)
     `SVTEST_END
 
 
     `SVTEST(get_prev_reg_val__reg_with_single_field_and_lsb_gap__returns_val_before_predict)
       reg_with_one_field_and_lsb_gap rg = reg_builder #(reg_with_one_field_and_lsb_gap)::create(
           'h1234_0000);
-      multi_field_post_predict_dummy_impl cb = new();
-      multi_field_post_predict::add(cb, rg);
+      multi_field_post_predict_dummy_impl post_predict = new();
+      multi_field_post_predict::add(post_predict, rg);
 
       void'(rg.predict('h0000_0000, .kind(UVM_PREDICT_WRITE)));
 
-      `FAIL_UNLESS(cb.get_prev_reg_value() == 'h1234_0000)
+      `FAIL_UNLESS(post_predict.get_prev_reg_value() == 'h1234_0000)
     `SVTEST_END
 
 
     `SVTEST(get_prev_reg_val__reg_with_two_fields__returns_val_before_predict)
       reg_with_two_fields rg = reg_builder #(reg_with_two_fields)::create('h1234_5678);
-      multi_field_post_predict_dummy_impl cb = new();
-      multi_field_post_predict::add(cb, rg);
+      multi_field_post_predict_dummy_impl post_predict = new();
+      multi_field_post_predict::add(post_predict, rg);
 
       void'(rg.predict('h0000_0000, .kind(UVM_PREDICT_WRITE)));
 
-      `FAIL_UNLESS(cb.get_prev_reg_value() == 'h1234_5678)
+      `FAIL_UNLESS(post_predict.get_prev_reg_value() == 'h1234_5678)
     `SVTEST_END
 
 
-    `SVTEST(post_predict__reg_with_single_field__called_once)
+    `SVTEST(call__reg_with_single_field__called_once)
       reg_with_one_field rg = reg_builder #(reg_with_one_field)::create();
-      multi_field_post_predict_dummy_impl cb = new();
-      multi_field_post_predict::add(cb, rg);
+      multi_field_post_predict_dummy_impl post_predict = new();
+      multi_field_post_predict::add(post_predict, rg);
 
       void'(rg.predict('h0000_0000, .kind(UVM_PREDICT_WRITE)));
 
-      `FAIL_UNLESS(cb.num_post_predict_calls == 1)
+      `FAIL_UNLESS(post_predict.num_post_predict_calls == 1)
     `SVTEST_END
 
 
     `SVTEST(post_predict__reg_with_two_fields__prev_value_updates)
       reg_with_two_fields rg = reg_builder #(reg_with_two_fields)::create('h1234_5678);
-      multi_field_post_predict_dummy_impl cb = new();
-      multi_field_post_predict::add(cb, rg);
+      multi_field_post_predict_dummy_impl post_predict = new();
+      multi_field_post_predict::add(post_predict, rg);
 
       void'(rg.predict('h0000_0000, .kind(UVM_PREDICT_WRITE)));
 
-      `FAIL_UNLESS(cb.prev_reg_value_at_post_predict_call == 'h1234_5678)
+      `FAIL_UNLESS(post_predict.prev_reg_value_at_post_predict_call == 'h1234_5678)
     `SVTEST_END
 
 
     `SVTEST(get_prev_reg_val__reg_with_two_fields__returns_val_for_predict)
       reg_with_two_fields rg = reg_builder #(reg_with_two_fields)::create('h0000_0000);
-      multi_field_post_predict_dummy_impl cb = new();
-      multi_field_post_predict::add(cb, rg);
+      multi_field_post_predict_dummy_impl post_predict = new();
+      multi_field_post_predict::add(post_predict, rg);
 
       void'(rg.predict('h1234_5678, .kind(UVM_PREDICT_WRITE)));
 
-      `FAIL_UNLESS(cb.get_reg_value() == 'h1234_5678)
+      `FAIL_UNLESS(post_predict.get_reg_value() == 'h1234_5678)
     `SVTEST_END
 
 
     `SVTEST(get_prev_field_val__reg_with_two_fields__returns_vals_before_predict)
       reg_with_two_fields rg = reg_builder #(reg_with_two_fields)::create('h1234_5678);
-      multi_field_post_predict_dummy_impl cb = new();
-      multi_field_post_predict::add(cb, rg);
+      multi_field_post_predict_dummy_impl post_predict = new();
+      multi_field_post_predict::add(post_predict, rg);
 
       void'(rg.predict('h0000_0000, .kind(UVM_PREDICT_WRITE)));
 
-      `FAIL_UNLESS(cb.get_prev_field_value(rg.FIELD0) == 'h5678)
-      `FAIL_UNLESS(cb.get_prev_field_value(rg.FIELD1) == 'h1234)
+      `FAIL_UNLESS(post_predict.get_prev_field_value(rg.FIELD0) == 'h5678)
+      `FAIL_UNLESS(post_predict.get_prev_field_value(rg.FIELD1) == 'h1234)
     `SVTEST_END
 
 
     `SVTEST(get_field_val__reg_with_two_fields__returns_vals_for_predict)
       reg_with_two_fields rg = reg_builder #(reg_with_two_fields)::create('h0000_0000);
-      multi_field_post_predict_dummy_impl cb = new();
-      multi_field_post_predict::add(cb, rg);
+      multi_field_post_predict_dummy_impl post_predict = new();
+      multi_field_post_predict::add(post_predict, rg);
 
       void'(rg.predict('h1234_5678, .kind(UVM_PREDICT_WRITE)));
 
-      `FAIL_UNLESS(cb.get_field_value(rg.FIELD0) == 'h5678)
-      `FAIL_UNLESS(cb.get_field_value(rg.FIELD1) == 'h1234)
+      `FAIL_UNLESS(post_predict.get_field_value(rg.FIELD0) == 'h5678)
+      `FAIL_UNLESS(post_predict.get_field_value(rg.FIELD1) == 'h1234)
     `SVTEST_END
 
 
     `SVTEST(get_kind__reg__returns_kind_for_predict)
       uvm_reg rg = reg_builder #(reg_with_one_field)::create();
-      multi_field_post_predict_dummy_impl cb = new();
-      multi_field_post_predict::add(cb, rg);
+      multi_field_post_predict_dummy_impl post_predict = new();
+      multi_field_post_predict::add(post_predict, rg);
 
       void'(rg.predict('h0, .kind(UVM_PREDICT_WRITE)));
-      `FAIL_UNLESS(cb.get_kind() == UVM_PREDICT_WRITE)
+      `FAIL_UNLESS(post_predict.get_kind() == UVM_PREDICT_WRITE)
 
       void'(rg.predict('h0, .kind(UVM_PREDICT_READ)));
-      `FAIL_UNLESS(cb.get_kind() == UVM_PREDICT_READ)
+      `FAIL_UNLESS(post_predict.get_kind() == UVM_PREDICT_READ)
     `SVTEST_END
 
   `SVUNIT_TESTS_END
@@ -161,7 +161,7 @@ module multi_field_post_predict_unit_test;
     int unsigned num_post_predict_calls;
     uvm_reg_data_t prev_reg_value_at_post_predict_call;
 
-    virtual function void post_predict();
+    protected virtual function void call();
       num_post_predict_calls++;
       prev_reg_value_at_post_predict_call = get_prev_reg_value();
     endfunction

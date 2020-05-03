@@ -93,7 +93,7 @@ virtual class multi_field_post_predict;
   endfunction
 
 
-  pure virtual function void post_predict();
+  protected pure virtual function void call();
 
 
   /* local */ class capture_prev_value_cb extends uvm_reg_cbs;
@@ -142,7 +142,7 @@ virtual class multi_field_post_predict;
         input uvm_predict_e kind,
         input uvm_path_e path,
         input uvm_reg_map map);
-      parent.post_predict();
+      parent.call();
     endfunction
 
     `m_uvm_get_type_name_func(call_post_predict_cb)
