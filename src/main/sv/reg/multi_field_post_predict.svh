@@ -86,7 +86,7 @@ virtual class multi_field_post_predict;
   pure virtual function void post_predict();
 
 
-  class capture_prev_value_cb extends uvm_reg_cbs;
+  /* local */ class capture_prev_value_cb extends uvm_reg_cbs;
 
     uvm_reg_data_t prev_value;
     uvm_reg_data_t value;
@@ -114,7 +114,7 @@ virtual class multi_field_post_predict;
   endclass
 
 
-  class call_post_predict_cb extends uvm_reg_cbs;
+  /* local */ class call_post_predict_cb extends uvm_reg_cbs;
 
     local const multi_field_post_predict parent;
 
