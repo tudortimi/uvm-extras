@@ -33,8 +33,10 @@ virtual class multi_field_post_predict;
       inst.capture_cbs.push_back(capture_cb);
     end
 
+    // We rely on the fact that 'predict(...)' gets called on the last field after all other fields
+    // have already been processed.
     call_cb.parent = inst;
-    uvm_reg_field_cb::add(fields[0], call_cb);
+    uvm_reg_field_cb::add(fields[fields.size()-1], call_cb);
   endfunction
 
 
