@@ -19,23 +19,28 @@ virtual class multi_field_post_predict;
   typedef class call_post_predict_cb;
 
 
+  local const string name;
   local capture_prev_value_cb capture_cbs[uvm_reg_field];
 
 
+  function new();
+    name = $sformatf("%s_%d", get_type_name(), this);
+  endfunction
+
+
   static function void add(multi_field_post_predict inst, uvm_reg rg);
-    call_post_predict_cb call_cb = new();
+    call_post_predict_cb call_cb = new(inst);
     uvm_reg_field fields[$];
     rg.get_fields(fields);
 
     foreach (fields[i]) begin
-      capture_prev_value_cb capture_cb = new();
+      capture_prev_value_cb capture_cb = new(inst);
       uvm_reg_field_cb::add(fields[i], capture_cb);
       inst.capture_cbs[fields[i]] = capture_cb;
     end
 
     // We rely on the fact that 'predict(...)' gets called on the last field after all other fields
     // have already been processed.
-    call_cb.parent = inst;
     uvm_reg_field_cb::add(fields[fields.size()-1], call_cb);
   endfunction
 
@@ -86,6 +91,11 @@ virtual class multi_field_post_predict;
     uvm_reg_data_t prev_value;
     uvm_reg_data_t value;
     int unsigned lsb_pos;
+    local const multi_field_post_predict parent;
+
+    function new(multi_field_post_predict parent);
+      super.new($sformatf("%s__%s", parent.name, get_type_name()));
+    endfunction
 
     virtual function void post_predict(
         input uvm_reg_field fld,
@@ -99,12 +109,19 @@ virtual class multi_field_post_predict;
       this.lsb_pos = fld.get_lsb_pos();
     endfunction
 
+    `m_uvm_get_type_name_func(capture_prev_value_cb)
+
   endclass
 
 
   class call_post_predict_cb extends uvm_reg_cbs;
 
-    multi_field_post_predict parent;
+    local const multi_field_post_predict parent;
+
+    function new(multi_field_post_predict parent);
+      super.new($sformatf("%s__%s", parent.name, get_type_name()));
+      this.parent = parent;
+    endfunction
 
     virtual function void post_predict(
         input uvm_reg_field fld,
@@ -116,6 +133,11 @@ virtual class multi_field_post_predict;
       parent.post_predict();
     endfunction
 
+    `m_uvm_get_type_name_func(call_post_predict_cb)
+
   endclass
+
+
+  `m_uvm_get_type_name_func(multi_field_post_predict)
 
 endclass
