@@ -64,6 +64,20 @@ module uvm_reg_acceptance_unit_test;
       `FAIL_UNLESS(queue.get(2) == rg.FIELD2)
     `SVTEST_END
 
+
+    `SVTEST(uvm_reg__predict_direct__does_not_call_post_predict)
+      reg_with_three_fields rg = reg_builder #(reg_with_three_fields)::create();
+      uvm_queue #(uvm_reg_field) queue = new();
+      capture_cb cb = new(queue);
+      uvm_reg_field_cb::add(rg.FIELD0, cb);
+      uvm_reg_field_cb::add(rg.FIELD1, cb);
+      uvm_reg_field_cb::add(rg.FIELD2, cb);
+
+      void'(rg.predict('h0000_0000, .kind(UVM_PREDICT_DIRECT)));
+
+      `FAIL_UNLESS(queue.size() == 0)
+    `SVTEST_END
+
   `SVUNIT_TESTS_END
 
 
