@@ -18,4 +18,6 @@ package uvm_extras;
   import uvm_pkg::*;
   `include "uvm_macros.svh"
 
+  `include "reg/multi_field_post_predict.svh"
+
 endpackage
