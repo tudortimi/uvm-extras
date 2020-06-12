@@ -90,7 +90,11 @@ virtual class multi_field_post_predict;
    * Sets the specified value in the field during the predict call.
    */
   protected function void set_field_value(uvm_reg_field field, uvm_reg_data_t value);
+    uvm_reg parent = field.get_parent();
+    bit busy = parent.is_busy();
+    parent.Xset_busyX(0);
     void'(field.predict(value));
+    parent.Xset_busyX(busy);
 
     // The value of the last field will be overwritten with what UVM computes. This function will be
     // called from a 'post_predict' callback, which will indirectly update the field via the 'value'
