@@ -84,6 +84,14 @@ virtual class multi_field_post_predict;
 
 
   /**
+   * Sets the specified value in the field during the predict call.
+   */
+  protected function void set_field_value(uvm_reg_field field, uvm_reg_data_t value);
+    void'(field.predict(value));
+  endfunction
+
+
+  /**
    * Returns the kind of the predict call.
    */
   function uvm_predict_e get_kind();

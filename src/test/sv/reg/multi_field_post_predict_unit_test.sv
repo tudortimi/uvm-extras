@@ -26,6 +26,7 @@ module multi_field_post_predict_unit_test;
   import uvm_extras::*;
 
   typedef class multi_field_post_predict_dummy_impl;
+  typedef class multi_field_post_predict_set_field_value_impl;
   typedef class reg_builder;
   typedef class dummy_reg_block;
   typedef class reg_with_one_field;
@@ -153,6 +154,18 @@ module multi_field_post_predict_unit_test;
       `FAIL_UNLESS(post_predict.get_kind() == UVM_PREDICT_READ)
     `SVTEST_END
 
+
+    `SVTEST(set_field_val__reg_with_two_fields_set_lowest__updates_the_field)
+      reg_with_two_fields rg = reg_builder #(reg_with_two_fields)::create('h0000_0000);
+      multi_field_post_predict_set_field_value_impl post_predict = new();
+      multi_field_post_predict::add(post_predict, rg);
+
+      post_predict.field_to_update = rg.FIELD0;
+      void'(rg.predict('h1234_5678, .kind(UVM_PREDICT_WRITE)));
+
+      `FAIL_UNLESS(rg.FIELD0.get_mirrored_value() == 42)
+    `SVTEST_END
+
   `SVUNIT_TESTS_END
 
 
@@ -164,6 +177,17 @@ module multi_field_post_predict_unit_test;
     protected virtual function void call();
       num_post_predict_calls++;
       prev_reg_value_at_post_predict_call = get_prev_reg_value();
+    endfunction
+
+  endclass
+
+
+  class multi_field_post_predict_set_field_value_impl extends multi_field_post_predict;
+
+    uvm_reg_field field_to_update;
+
+    protected virtual function void call();
+      set_field_value(field_to_update, 42);
     endfunction
 
   endclass
