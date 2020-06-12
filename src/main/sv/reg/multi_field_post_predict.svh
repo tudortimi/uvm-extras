@@ -96,7 +96,7 @@ virtual class multi_field_post_predict;
     // called from a 'post_predict' callback, which will indirectly update the field via the 'value'
     // parameter. It will undo any 'field.predict(...)' calls.
     if (field == last_field)
-      call_cb.value_to_set.push_back(value);
+      call_cb.schedule_update(value);
   endfunction
 
 
@@ -144,13 +144,17 @@ virtual class multi_field_post_predict;
 
   /* local */ class call_post_predict_cb extends uvm_reg_cbs;
 
-    uvm_reg_data_t value_to_set[$:1];
-
     local const multi_field_post_predict parent;
+    local uvm_reg_data_t value_to_set[$:0];
 
     function new(multi_field_post_predict parent);
       super.new($sformatf("%s__%s", parent.name, get_type_name()));
       this.parent = parent;
+    endfunction
+
+    function void schedule_update(uvm_reg_data_t value);
+      value_to_set.delete();
+      value_to_set.push_front(value);
     endfunction
 
     virtual function void post_predict(
