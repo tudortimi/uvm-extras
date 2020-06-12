@@ -20,7 +20,9 @@ virtual class multi_field_post_predict;
 
 
   local const string name;
+  local uvm_reg_field last_field;
   local capture_prev_value_cb capture_cbs[uvm_reg_field];
+  local call_post_predict_cb call_cb;
 
 
   function new();
@@ -29,7 +31,6 @@ virtual class multi_field_post_predict;
 
 
   static function void add(multi_field_post_predict inst, uvm_reg rg);
-    call_post_predict_cb call_cb = new(inst);
     uvm_reg_field fields[$];
     rg.get_fields(fields);
 
@@ -41,7 +42,9 @@ virtual class multi_field_post_predict;
 
     // We rely on the fact that 'predict(...)' gets called on the last field after all other fields
     // have already been processed.
-    uvm_reg_field_cb::add(fields[fields.size()-1], call_cb);
+    inst.last_field = fields[fields.size()-1];
+    inst.call_cb = new(inst);
+    uvm_reg_field_cb::add(inst.last_field, inst.call_cb);
   endfunction
 
 
@@ -80,6 +83,20 @@ virtual class multi_field_post_predict;
    */
   function uvm_reg_data_t get_field_value(uvm_reg_field field);
     return capture_cbs[field].value;
+  endfunction
+
+
+  /**
+   * Sets the specified value in the field during the predict call.
+   */
+  protected function void set_field_value(uvm_reg_field field, uvm_reg_data_t value);
+    void'(field.predict(value));
+
+    // The value of the last field will be overwritten with what UVM computes. This function will be
+    // called from a 'post_predict' callback, which will indirectly update the field via the 'value'
+    // parameter. It will undo any 'field.predict(...)' calls.
+    if (field == last_field)
+      call_cb.schedule_update(value);
   endfunction
 
 
@@ -128,10 +145,16 @@ virtual class multi_field_post_predict;
   /* local */ class call_post_predict_cb extends uvm_reg_cbs;
 
     local const multi_field_post_predict parent;
+    local uvm_reg_data_t value_to_set[$:0];
 
     function new(multi_field_post_predict parent);
       super.new($sformatf("%s__%s", parent.name, get_type_name()));
       this.parent = parent;
+    endfunction
+
+    function void schedule_update(uvm_reg_data_t value);
+      value_to_set.delete();
+      value_to_set.push_front(value);
     endfunction
 
     virtual function void post_predict(
@@ -142,6 +165,8 @@ virtual class multi_field_post_predict;
         input uvm_path_e path,
         input uvm_reg_map map);
       parent.call();
+      if (value_to_set.size() > 0)
+        value = value_to_set.pop_front();
     endfunction
 
     `m_uvm_get_type_name_func(call_post_predict_cb)
