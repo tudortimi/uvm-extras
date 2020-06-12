@@ -164,6 +164,20 @@ module multi_field_post_predict_unit_test;
       void'(rg.predict('h1234_5678, .kind(UVM_PREDICT_WRITE)));
 
       `FAIL_UNLESS(rg.FIELD0.get_mirrored_value() == 42)
+      `FAIL_UNLESS(rg.FIELD1.get_mirrored_value() == 'h1234)
+    `SVTEST_END
+
+
+    `SVTEST(set_field_val__reg_with_two_fields_set_highest__updates_the_field)
+      reg_with_two_fields rg = reg_builder #(reg_with_two_fields)::create('h0000_0000);
+      multi_field_post_predict_set_field_value_impl post_predict = new();
+      multi_field_post_predict::add(post_predict, rg);
+
+      post_predict.field_to_update = rg.FIELD1;
+      void'(rg.predict('h1234_5678, .kind(UVM_PREDICT_WRITE)));
+
+      `FAIL_UNLESS(rg.FIELD0.get_mirrored_value() == 'h5678)
+      `FAIL_UNLESS(rg.FIELD1.get_mirrored_value() == 42)
     `SVTEST_END
 
   `SVUNIT_TESTS_END
